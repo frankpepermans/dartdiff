@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Test Dartdiff</title>
+        <script defer src="main.dart" type="application/dart"></script>
+        <script defer src="packages/browser/dart.js"></script>
+        <style>
+            [var-key] {
+                background: lightgreen;
+            }
+            [answer-id] {
+                background: lightblue;
+            }
+            ins {
+                text-decoration: underline;
+            }
+            del {
+                text-decoration: line-through;
+            }
+            [ins] {
+                text-decoration: none;
+                padding: 2px;
+                background: darkgreen;
+                color: white;
+                border-radius: 6px;
+            }
+            [del]::before {
+                text-decoration: none;
+                content: "Removed";
+                padding: 2px;
+                background: darkred;
+                color: white;
+                border-radius: 6px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="result"></div>
+    </body>
+</html>

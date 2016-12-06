@@ -2,14 +2,14 @@ import 'dart:math';
 
 abstract class Diff {
 
-  final String _oldString, _newString;
+  final String oldString, newString;
   List<String> oldTokens, newTokens;
 
-  bool useLongestToken = true;
+  bool useLongestToken = false;
 
-  Diff(this._oldString, this._newString) {
-    oldTokens = tokenize(_oldString);
-    newTokens = tokenize(_newString);
+  Diff(this.oldString, this.newString) {
+    oldTokens = tokenize(oldString);
+    newTokens = tokenize(newString);
   }
 
   List<Component> diff({Map<String, dynamic> options}) {
@@ -63,16 +63,17 @@ abstract class Diff {
       if (!canAdd || (canRemove && addPath.newPos < removePath.newPos)) {
         basePath = new _Path.cloned(removePath);
 
-        basePath.components = _pushComponent(basePath.components, null, true);
+        _pushComponent(basePath.components, null, true);
       } else {
         basePath = addPath;
 
         basePath.newPos++;
 
-        basePath.components = _pushComponent(basePath.components, true, null);
+        _pushComponent(basePath.components, true, null);
       }
 
       oldPos = _extractCommon(basePath, diagonalPath);
+
       if ((basePath.newPos + 1) >= newLen && (oldPos + 1) >= oldLen) {
         return _buildValues(basePath.components, useLongestToken);
       } else {
@@ -83,17 +84,14 @@ abstract class Diff {
     return null;
   }
 
-  List<Component> _pushComponent(List<Component> components, bool isAdded, bool isRemoved) {
-    final List<Component> newComponents = new List<Component>.from(components);
-    final Component last = newComponents.last;
+  void _pushComponent(List<Component> components, bool isAdded, bool isRemoved) {
+    final Component last = components.isNotEmpty ? components.last : null;
 
     if (last != null && last.isAdded == isAdded && last.isRemoved == isRemoved) {
-      newComponents[newComponents.length - 1] = new Component(count: last.count + 1, isAdded: isAdded, isRemoved: isRemoved);
+      components[components.length - 1] = new Component(count: last.count + 1, isAdded: isAdded, isRemoved: isRemoved);
     } else {
-      newComponents.add(new Component(count: 1, isAdded: isAdded, isRemoved: isRemoved));
+      components.add(new Component(count: 1, isAdded: isAdded, isRemoved: isRemoved));
     }
-
-    return newComponents;
   }
 
   List<Component> _buildValues(List<Component> components, bool useLongestToken) {
@@ -109,19 +107,31 @@ abstract class Diff {
       component.isRemoved = component.isRemoved == null ? false : component.isRemoved;
 
       if (!component.isRemoved) {
-        component.value = join(newTokens.sublist(newPos, newPos + component.count));
+        if (!component.isAdded && useLongestToken) {
+          int i = 0;
+
+          component.value = join(newTokens
+            .sublist(newPos, newPos + component.count)
+            .map((String value) {
+              final String oldValue = oldTokens[oldPos + i++];
+
+              return oldValue.length > value.length ? oldValue : value;
+            }));
+        } else {
+          component.value = join(newTokens.sublist(newPos, newPos + component.count));
+        }
 
         newPos += component.count;
 
         if (!component.isAdded) oldPos += component.count;
       } else {
-        component.value = join(oldTokens.sublist(oldPos, min(oldPos + component.count, oldTokens.length)));
+        component.value = join(oldTokens.sublist(oldPos, oldPos + component.count));
 
         oldPos += component.count;
 
         Component last = components.elementAt(componentPos - 1);
 
-        if (componentPos != 0 && last.isAdded == true) {
+        if (componentPos != 0 && last.isAdded) {
           Component tmp = last;
 
           components[componentPos - 1] = components.elementAt(componentPos);
@@ -132,7 +142,7 @@ abstract class Diff {
 
     Component lastComponent = components.elementAt(componentLen - 1);
 
-    if (componentLen > 1 && (lastComponent.isAdded == true || lastComponent.isRemoved == true) && lastComponent.value.isEmpty) {
+    if (componentLen > 1 && (lastComponent.isAdded || lastComponent.isRemoved) && lastComponent.value.isEmpty) {
       components[componentLen - 2].value += lastComponent.value;
       components.removeLast();
     }
@@ -180,7 +190,7 @@ class Component {
   bool isAdded, isRemoved;
   String value;
 
-  Component({this.count, this.isAdded: false, this.isRemoved: false, this.value});
+  Component({this.count, this.isAdded, this.isRemoved, this.value});
 
   @override String toString() => value;
 

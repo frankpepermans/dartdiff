@@ -1,4 +1,4 @@
-import 'package:dartdiff/src/diff/diff.dart';
+import 'package:dartdiff/src/diff/diff.dart' show Diff;
 
 class WordDiff extends Diff {
 
