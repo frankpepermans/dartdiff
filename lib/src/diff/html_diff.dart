@@ -2,11 +2,15 @@ import 'dart:html';
 
 import 'package:dartdiff/src/diff/diff.dart' show Diff;
 
+import 'package:dartdiff/src/diff/character_diff.dart' show CharacterDiff;
 import 'package:dartdiff/src/diff/word_diff.dart' show WordDiff;
 
 class HtmlDiff extends Diff {
 
-  HtmlDiff(String oldString, String newString) : super(oldString, newString);
+  final bool useCharacterDiff;
+  int _nextId = 0;
+
+  HtmlDiff(String oldString, String newString, {this.useCharacterDiff: false}) : super(oldString, newString);
 
   @override List<String> tokenize(String value) {
     final DocumentFragment fragment = new DocumentFragment.html(value, treeSanitizer: NodeTreeSanitizer.trusted);
@@ -15,24 +19,27 @@ class HtmlDiff extends Diff {
   }
 
   List<String> _flattenHtml(Node node, {List<String> list}) {
+    String tagName;
+
+    if (node is Element) tagName = '${node.tagName}_${++_nextId}';
+
     list ??= <String>[];
 
     if (node is Element) {
-      if (node.attributes.isNotEmpty) list.add('<${node.tagName} ${_flattenAttributes(node.attributes)}>');
-      else list.add('<${node.tagName}>');
+      if (node.attributes.isNotEmpty) list.add('<$tagName ${_flattenAttributes(node.attributes)}>');
+      else list.add('<$tagName>');
     }
 
     node.childNodes.forEach((Node childNode) {
       if (childNode is Element) {
         _flattenHtml(childNode, list: list);
       } else {
-        list.addAll(new WordDiff(oldString, newString).tokenize(childNode.text));
+        if (useCharacterDiff) list.addAll(new CharacterDiff(oldString, newString).tokenize(childNode.text));
+        else list.addAll(new WordDiff(oldString, newString).tokenize(childNode.text));
       }
     });
 
-    if (node is Element) {
-      list.add('</${node.tagName}>');
-    }
+    if (node is Element) list.add('</$tagName>');
 
     return list;
   }

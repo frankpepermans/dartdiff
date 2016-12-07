@@ -3,3 +3,7 @@ version: 0.0.1
 description: A simple console application.
 dev_dependencies:
   test: ^0.12.0
+transformers:
+- $dart2js:
+    checked: false
+    minify: true

@@ -129,9 +129,9 @@ abstract class Diff {
 
         oldPos += component.count;
 
-        Component last = components.elementAt(componentPos - 1);
+        Component last = (componentPos >= 1 && componentPos <= components.length) ? components.elementAt(componentPos - 1) : null;
 
-        if (componentPos != 0 && last.isAdded) {
+        if (last != null && componentPos != 0 && last.isAdded) {
           Component tmp = last;
 
           components[componentPos - 1] = components.elementAt(componentPos);
