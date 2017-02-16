@@ -22,9 +22,15 @@ class HtmlDiff extends Diff {
     String tagName;
 
     if (node is Element) {
-      if (node.attributes.containsKey('answer-id')) tagName = '${node.tagName}_${node.attributes['answer-id']}';
-      else if (node.attributes.containsKey('var-key')) tagName = '${node.tagName}_${node.attributes['var-key']}';
-      else tagName = node.tagName;
+      Element nodeCast = node as Element;
+
+      if (nodeCast.attributes.containsKey('repetition-id')) {
+        node = new DocumentFragment.html(nodeCast.innerHtml, treeSanitizer: NodeTreeSanitizer.trusted);
+      }
+
+      if (nodeCast.attributes.containsKey('answer-id')) tagName = '${nodeCast.tagName}_${nodeCast.attributes['answer-id']}';
+      else if (nodeCast.attributes.containsKey('var-key')) tagName = '${nodeCast.tagName}_${nodeCast.attributes['var-key']}';
+      else tagName = nodeCast.tagName;
     }
 
     list ??= <String>[];
