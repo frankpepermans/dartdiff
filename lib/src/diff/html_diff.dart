@@ -58,10 +58,12 @@ class HtmlDiff extends Diff {
     final List<String> list = <String>[];
 
     attributes.forEach((String K, String V) {
-      if (V.trim().isEmpty) {
-        list.add(K);
-      } else {
-        list.add('$K="$V"');
+      if (K.toLowerCase() != 'uid' && K.toLowerCase() != 'class') {
+        if (V.trim().isEmpty) {
+          list.add(K);
+        } else {
+          list.add('$K="$V"');
+        }
       }
     });
 
