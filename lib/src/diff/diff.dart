@@ -1,5 +1,3 @@
-import 'dart:math';
-
 abstract class Diff {
 
   final String oldString, newString;

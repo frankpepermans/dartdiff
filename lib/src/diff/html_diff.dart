@@ -8,7 +8,6 @@ import 'package:dartdiff/src/diff/word_diff.dart' show WordDiff;
 class HtmlDiff extends Diff {
 
   final bool useCharacterDiff;
-  int _nextId = 0;
 
   HtmlDiff(String oldString, String newString, {this.useCharacterDiff: false}) : super(oldString, newString);
 

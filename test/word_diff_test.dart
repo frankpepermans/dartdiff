@@ -2,7 +2,7 @@ import 'package:test/test.dart';
 
 import 'package:dartdiff/dartdiff.dart';
 
-main() {
+void main() {
   test("should diff whitespace", () {
     expect(asXml(new WordDiff('New Value', 'New  ValueMoreData').diff()), 'New<del> Value</del><ins>  ValueMoreData</ins>');
   });

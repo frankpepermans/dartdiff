@@ -8,7 +8,7 @@ final String B = '<div class="ng2-html-text-transform-text-area" spellcheck="fal
 DivElement output;
 
 void main() {
-  output = querySelector('#output');
+  output = querySelector('#output') as DivElement;
 
   <Function>[
      () {

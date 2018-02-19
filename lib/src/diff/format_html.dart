@@ -1,6 +1,6 @@
 import 'package:dartdiff/src/diff/diff.dart' show Component;
 
-import 'package:dartdiff/src/diff/util.dart' show analyzeHtml, patchHtml, HtmlObject, TextObject, Tuple;
+import 'package:dartdiff/src/diff/util.dart' show analyzeHtml, HtmlObject, TextObject, Tuple;
 
 String asHtml(List<Component> components) {
   final StringBuffer buffer = new StringBuffer();
@@ -12,7 +12,7 @@ String asHtml(List<Component> components) {
   final List<dynamic> patched = analyzed;
 
   for (int i=0, len=patched.length; i<len; i++) {
-    Tuple entry = patched[i];
+    Tuple entry = patched[i] as Tuple;
 
     for (int j=0, len2=entry.analyzed.length; j<len2; j++) {
       bool isAdded = entry.component.isAdded == null ? false : entry.component.isAdded;
