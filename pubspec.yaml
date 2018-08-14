@@ -1,6 +1,8 @@
 name: dartdiff
 version: 0.0.2
 description: A simple console application.
+environment:
+  sdk: '>=2.0.0-dev.62.0 <3.0.0'
 dev_dependencies:
   test: ^0.12.0
 transformers:
